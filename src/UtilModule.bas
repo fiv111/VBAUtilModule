@@ -234,7 +234,7 @@ Public Function time2sec(h, m, s)
 End Function
 
 ' Convert string time value to second.
-Private Function strtime2sec(strtime)
+Public Function strtime2sec(strtime)
   Set t       = timeObject(strtime)
   strtime2sec = time2sec(t("h"), t("m"), t("s"))
   Set t       = Nothing
