@@ -215,7 +215,6 @@ End Function
 ' ---
 ' Time
 ' ---
-
 ' String to (time)object
 Public Function timeObject(Optional val = "00:00:00") As Object
   Set o = CreateObject("Scripting.Dictionary")
@@ -229,9 +228,16 @@ End Function
 
 ' Convert time value to second. (Long)
 Public Function time2sec(h, m, s)
-  hourpersec = 60 * 60
-  minPerSec = 60
-  time2sec = (h * hourpersec) + (m * minPerSec) + s
+  hourPerSec = 60 * 60
+  minPerSec  = 60
+  time2sec   = (h * hourPerSec) + (m * minPerSec) + s
+End Function
+
+' Convert string time value to second.
+Private Function strtime2sec(strtime)
+  Set t       = timeObject(strtime)
+  strtime2sec = time2sec(t("h"), t("m"), t("s"))
+  Set t       = Nothing
 End Function
 
 ' Convert second to time string.
@@ -252,4 +258,22 @@ End Function
 ' Return the workday in month
 Public Function getWorkdayInMonth(firstDay, lastDay, holidayRange)
   getWorkdayInMonth = Application.WorksheetFunction.NetworkDays(firstDay, lastDay, holidayRange)
+End Function
+
+
+' ---
+' String
+' ---
+' regReplace
+Public Function regReplace(val, rval, pat)
+  Set re = CreateObject("VBScript.RegExp")
+  With re
+    .Pattern = pat
+    .IgnoreCase = True
+    .Global = True
+  End With
+
+  regReplace = re.Replace(val, rval)
+
+  Set re = Nothing
 End Function
