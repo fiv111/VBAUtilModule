@@ -1,5 +1,8 @@
 # CHANGE LOG
 
+## v1.1.0 (2016.6.1)
+- Add type.
+
 ## v1.0.2 (2016.5.31)
 - bug fixes.
 
