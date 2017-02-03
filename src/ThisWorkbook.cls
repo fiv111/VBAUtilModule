@@ -11,21 +11,25 @@ Option Explicit
 
 Private Sub Workbook_AfterSave(ByVal Success As Boolean)
   If Success Then
-    Call ShapeUtilModule.refresh
+    Call UtilModule.stopCalculate
+    ThisWorkbook.ActiveSheet.Calculate
+    Call UtilModule.startCalculate
   End If
 End Sub
 
 
 Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
-  Call ShapeUtilModule.shapesFreeFloating
+  Call UtilModule.shapesFreeFloating
 End Sub
 
 
 Private Sub Workbook_Open()
-  Call ShapeUtilModule.shapesFreeFloating
+  Call UtilModule.shapesFreeFloating
 End Sub
 
 
 Private Sub Workbook_SheetActivate(ByVal Sh As Object)
-  Call ShapeUtilModule.refresh
+  Call UtilModule.stopCalculate
+  ThisWorkbook.ActiveSheet.Calculate
+  Call UtilModule.startCalculate
 End Sub

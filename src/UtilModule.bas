@@ -1,22 +1,28 @@
 Attribute VB_Name = "UtilModule"
 Option Explicit
 
+Private Const kFontName = "Meiryo"
+Private Const kFontSize = 10
+
+
+
 ' ---
 ' screen, calculate Update
 ' ---
 ' stopCalculate
 Public Sub stopCalculate()
-  Application.ScreenUpdating    = False
+  Application.ScreenUpdating = False
   ActiveSheet.EnableCalculation = False
-  Application.Calculation       = xlCalculationManual
+  Application.Calculation = xlCalculationManual
 End Sub
 
 ' startCalculate
 Public Sub startCalculate()
-  Application.Calculation       = xlCalculationAutomatic
+  Application.Calculation = xlCalculationAutomatic
   ActiveSheet.EnableCalculation = True
-  Application.ScreenUpdating    = True
+  Application.ScreenUpdating = True
 End Sub
+
 
 
 ' ---
@@ -24,17 +30,18 @@ End Sub
 ' ---
 ' close all workbooks
 Public Sub closeAllBooks()
+  Dim wb As Variant
   Do While Workbooks.Count >= 2
-    Dim wb As Variant
     For Each wb In Workbooks
       If wb.name <> ThisWorkbook.name Then
-        Application.DisplayAlerts = Flase
+        Application.DisplayAlerts = False
         wb.Close saveChanges:=False
         Application.DisplayAlerts = True
       End If
     Next wb
   Loop
 End Sub
+
 
 
 ' ---
@@ -53,6 +60,178 @@ Public Function hasSheet(ByVal book As Workbook, ByVal name As String) As Boolea
   Next
 fin:
 End Function
+
+' Get the information of currentsheet from the other worksheet.
+Public Function getCurrentSheetInfo(ByVal sheetName As String, ByVal r As String, Optional ByVal num As Long = 0) As Variant
+  Dim val As Variant
+
+  Dim re As Object
+  Set re = CreateObject("VBScript.RegExp")
+  With re
+    .Pattern = "^[0-9]+$"
+    .IgnoreCase = True
+    .Global = True
+  End With
+  
+  If re.test(ThisWorkbook.ActiveSheet.name) Then
+    If num = 0 Then
+      val = ThisWorkbook.Worksheets(sheetName).Range(r & CInt(ThisWorkbook.ActiveSheet.name) + 1).Value
+    Else
+      val = ThisWorkbook.Worksheets(sheetName).Range(r & num + 1).Value
+    End If
+  Else
+    val = "-"
+  End If
+
+  If Len(val) <= 0 Then
+    getCurrentSheetInfo = "-"
+  Else
+    getCurrentSheetInfo = val
+  End If
+End Function
+
+' Create a attribute table.
+Private Sub attachAttributeTable(Optional ByVal ac As Range = Nothing)
+  ' selection
+  Dim s As Range
+
+  If ac Is Nothing Then
+    Set s = ActiveCell
+  Else
+    Set s = ac
+  End If
+
+  If s.Count > 1 Then
+    MsgBox ("More then one cell has been selected. Select only ONE cell. Try again.")
+    Exit Sub
+  End If
+
+  ' head
+  Dim docHead(5), attrHead(5), docVal(5) As String
+
+  docHead(0) = "PageID"
+  docHead(1) = "PageName"
+  docHead(2) = "CreatedBy"
+  docHead(3) = "UpdatedBy"
+  docHead(4) = "CreatedAt"
+  docHead(5) = "UpdatedAt"
+
+  docVal(0) = "=getCurrentSheetInfo(" & Chr(34) & "Sitemap" & Chr(34) & ", " & Chr(34) & "A" & Chr(34) & ")"
+  docVal(1) = "=getCurrentSheetInfo(" & Chr(34) & "Sitemap" & Chr(34) & ", " & Chr(34) & "B" & Chr(34) & ")"
+  docVal(2) = "-"
+  docVal(3) = "-"
+  docVal(4) = Date
+  docVal(5) = "=TODAY()"
+
+  attrHead(0) = "ID"
+  attrHead(1) = "Name"
+  attrHead(2) = "Type"
+  attrHead(3) = "Description"
+  attrHead(4) = "URL"
+  attrHead(5) = "RedirectURL"
+
+  ' color
+  Dim docInfoHeadColor, attrHeadColor, colorWhite, colorGrey As Long
+  docInfoHeadColor = RGB(51, 102, 153)
+  attrHeadColor = RGB(128, 128, 128)
+  colorWhite = RGB(255, 255, 255)
+  colorGrey = RGB(80, 80, 80)
+
+  Call UtilModule.stopCalculate
+
+  ' print document head
+  Dim i As Variant
+  Dim r, c As Long
+  For i = 0 To UBound(docHead)
+    r = s.Row
+    c = s.Column + i
+
+    With ActiveSheet.Cells(r, c)
+      .Value = docHead(i)
+      .Interior.color = docInfoHeadColor
+      .Font.name = kFontName
+      .Font.color = colorWhite
+      .Font.Bold = True
+      .Font.Size = kFontSize
+      .Borders.color = colorGrey
+      .Borders.Weight = xlThin
+      .Borders.LineStyle = xlContinuous
+    End With
+
+    With ActiveSheet.Cells(r + 1, c)
+      .Value = docVal(i)
+      .Font.name = kFontName
+      .Borders.color = colorGrey
+      .Borders.Weight = xlThin
+      .Borders.LineStyle = xlContinuous
+    End With
+  Next
+
+  Dim j As Variant
+  Dim attrSize As Integer
+  attrSize = 10
+
+  ' print attribute head
+  For i = 0 To UBound(attrHead)
+    r = s.Row + 2
+    c = s.Column + i
+
+    With ActiveSheet.Cells(r, c)
+      .Value = attrHead(i)
+      .Interior.color = attrHeadColor
+      .Font.name = kFontName
+      .Font.color = colorWhite
+      .Font.Bold = True
+      .Font.Size = kFontSize
+      .Borders.color = colorGrey
+      .Borders.Weight = xlThin
+      .Borders.LineStyle = xlContinuous
+    End With
+
+    For j = 1 To attrSize
+      If i = 0 Then
+        ActiveSheet.Cells(r + j, c).Value = j
+      Else
+        ActiveSheet.Cells(r + j, c).Value = "-"
+      End If
+
+      With ActiveSheet.Cells(r + j, c)
+        .Font.Size = kFontSize
+        .Font.name = kFontName
+        .Borders.color = colorGrey
+        .Borders.Weight = xlThin
+        .Borders.LineStyle = xlContinuous
+      End With
+    Next
+  Next
+
+  Call startCalculate
+  Set s = Nothing
+End Sub
+
+' Create a attribute table for current worksheet.
+Public Sub drawAttributeTable()
+  attachAttributeTable ActiveCell
+End Sub
+
+' Create a attribute table for all worksheets.
+Public Sub drawAttributeTableAll()
+  Dim s As Range
+  Set s = ActiveCell
+
+  Dim shts As sheets
+  Set shts = Worksheets
+
+  Dim ws As Variant
+  For Each ws In shts
+    ws.Activate
+    attachAttributeTable s
+  Next
+
+  Set shts = Nothing
+  Set s = Nothing
+End Sub
+
 
 
 ' ---
@@ -77,17 +256,18 @@ Public Function nextId(addr As String) As Double
     val = nextId(c.Address)
     GoTo done
   End If
-  
+
   val = val + 1
-  
+
 done:
   nextId = val
   Set c = Nothing
 End Function
 
 
+
 ' ---
-' last row, col
+' last row, column
 ' Worksheets o
 ' ---
 ' lastRow
@@ -101,28 +281,81 @@ Public Function lastCol(ByVal o As Worksheet, Optional ByVal first As Integer = 
 End Function
 
 
+
 ' ---
 ' Sharpes
 ' ---
-' set all sharpes position to be a fixed sharp.
-Sub sharpFreeFloat()
-  Dim ws As Variant
-  
+' Change All the shape object placement to be free-floating in those worksheets.
+Public Sub shapesFreeFloating()
+  Dim ws, s As Variant
+
   For Each ws In ThisWorkbook.Worksheets
-    
     If ws.Shapes.Count > 0 Then
-      
-      Dim s As Variant
       For Each s In ws.Shapes
-        If Not s.AutoShapeType = msoShapeMixed Then
+        If Not s.AutoShapeType = msoShapeMixed Or Not s.Type = msoShapeMixed Then
           s.Placement = xlFreeFloating
         End If
       Next
-      
     End If
-    
   Next
 End Sub
+
+' Select all shape object from current worksheet.
+Public Sub selectCurrentWorksheetShapes()
+  If ActiveSheet.Shapes.Count > 0 Then
+    ActiveSheet.Shapes.SelectAll
+  End If
+End Sub
+
+' Attach a numbering label for selected shape.
+Public Sub attachNumberingLabel()
+  Dim sWidth, sHeight As Double
+  Dim i As Variant
+  Dim s, sp As Shape
+  Dim labelName As String
+  Dim bgColor, borderColor As Long
+
+  ' Label Shape size. 1cm
+  sWidth = 28.2
+  sHeight = 28.2
+
+  labelName = "VBAWFLabel"
+
+  ' yellow bg
+  ' black line
+  bgColor = RGB(255, 255, 0)
+  borderColor = RGB(0, 0, 0)
+
+  If Not TypeName(Selection) = "Range" Then
+    For i = 1 To Selection.ShapeRange.Count
+      Set sp = Selection.ShapeRange.Item(i)
+      Set s = ActiveSheet.Shapes.AddShape(msoShapeRectangle, sp.Left + sp.width - sWidth * 0.5, sp.Top - sHeight * 0.5, sWidth, sHeight)
+
+      With s
+        .name = labelName & i
+        .Fill.ForeColor.RGB = bgColor
+        .Line.ForeColor.RGB = borderColor
+        .Line.Weight = 3
+        .TextFrame.Characters.Text = i
+        .TextFrame.Characters.Font.name = kFontName
+        .TextFrame.Characters.Font.color = borderColor
+        .TextFrame.Characters.Font.Size = kFontSize
+        .TextFrame.HorizontalAlignment = xlHAlignCenter
+        .TextFrame.VerticalAlignment = xlVAlignCenter
+      End With
+
+      Set s = Nothing
+      Set sp = Nothing
+    Next
+  End If
+End Sub
+
+' Attach numbering labels for all shapes on current worksheet.
+Public Sub attachNumberingLabelAll()
+  Call selectCurrentWorksheetShapes
+  Call attachNumberingLabel
+End Sub
+
 
 
 ' ---
@@ -132,7 +365,7 @@ End Sub
 Public Sub pMsg(ByVal msg As String, Optional ByVal sec As Integer = 1)
   Dim o As Object
   Set o = CreateObject("WScript.Shell")
-  o.Popup msg, sec, "自動表示", vbInformation
+  o.Popup msg, sec, "Auto Display", vbInformation
   Set o = Nothing
 End Sub
 
@@ -145,8 +378,8 @@ Public Function tag(ByVal tName As String, ByVal label As String, Optional ByVal
   Dim doc As MSHTML.HTMLDocument
   Dim t As MSHTML.HTMLElementCollection
 
-  Set doc     = New MSHTML.HTMLDocument
-  Set t       = doc.createElement(tName)
+  Set doc = New MSHTML.HTMLDocument
+  Set t = doc.createElement(tName)
   t.innerText = label
 
   If Not styleObj Is Nothing Then
@@ -181,7 +414,7 @@ End Function
 ' ---
 Public Sub glob(ByVal fPath As String, ByRef ary As Object)
   Dim fso As New Scripting.FileSystemObject
-  
+
   Dim f As Variant
   For Each f In fso.GetFolder(fPath).files
     ary.Add f
@@ -194,7 +427,7 @@ Public Sub glob(ByVal fPath As String, ByRef ary As Object)
       glob d, ary
     Next
   End If
-  
+
   Set fso = Nothing
 End Sub
 
@@ -206,7 +439,7 @@ End Sub
 Public Function uniq(ByVal ary As Object) As Object
   Dim nAry As Object
   Set nAry = CreateObject("System.Collections.ArrayList")
-  
+
   Dim v As Variant
   For Each v In ary
     If Not nAry.contains(v) Then
@@ -216,6 +449,7 @@ Public Function uniq(ByVal ary As Object) As Object
 
   Set uniq = nAry
 End Function
+
 
 
 ' ---
@@ -236,7 +470,7 @@ Public Function getInteriorColorByFormula(ByVal c As Range) As Long
   Dim fLen As Long
   Dim cColor As Long
   Dim i As Integer
-  
+
   Set fc = c.FormatConditions
   fLen = fc.Count
   cColor = 0
@@ -253,6 +487,7 @@ Public Function getInteriorColorByFormula(ByVal c As Range) As Long
 End Function
 
 
+
 ' ---
 ' Time
 ' ---
@@ -260,17 +495,15 @@ End Function
 Public Function timeObject(Optional ByVal val As String = "00:00:00") As Object
   Dim o As Object
   Dim tmp() As String
-  
+
   Set o = CreateObject("Scripting.Dictionary")
-  
   tmp = Split(val, ":")
-  
+
   o.Add "h", CDbl(tmp(0))
   o.Add "m", CDbl(tmp(1))
   o.Add "s", CDbl(tmp(2))
-  
+
   Set timeObject = o
-  
   Set o = Nothing
 End Function
 
@@ -312,6 +545,7 @@ Public Function getWorkdayInMonth(ByVal firstDay As Variant, ByVal lastDay As Va
 End Function
 
 
+
 ' ---
 ' String
 ' ---
@@ -319,13 +553,13 @@ End Function
 Public Function reReplace(ByVal val As String, ByVal rval As String, ByVal pat As String) As String
   Dim re As Object
   Set re = CreateObject("VBScript.RegExp")
-  
+
   With re
     .Pattern = pat
     .IgnoreCase = True
     .Global = True
   End With
-  
+
   reReplace = re.Replace(val, rval)
   Set re = Nothing
 End Function
