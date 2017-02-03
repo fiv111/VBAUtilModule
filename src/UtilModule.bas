@@ -222,10 +222,20 @@ Public Sub drawAttributeTableAll()
   Dim shts As sheets
   Set shts = Worksheets
 
+  Dim re As Object
+  Set re = CreateObject("VBScript.RegExp")
+  With re
+    .Pattern = "^[0-9]+$"
+    .IgnoreCase = True
+    .Global = True
+  End With
+  
   Dim ws As Variant
   For Each ws In shts
-    ws.Activate
-    attachAttributeTable s
+    If re.test(ws.Name) Then
+      ws.Activate
+      attachAttributeTable s
+    End If
   Next
 
   Set shts = Nothing
