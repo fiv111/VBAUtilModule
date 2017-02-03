@@ -233,6 +233,26 @@ Public Sub drawAttributeTableAll()
 End Sub
 
 
+' Rename worksheets to ordered number.
+Public Sub rmWorksheets()
+  Dim num, shtSize As Long
+  num = 1
+
+  Dim ss As sheets
+  Set ss = ActiveWindow.SelectedSheets
+  shtSize = ss.Count
+
+  Dim i As Variant
+  For i = num To shtSize
+    If Not UtilModule.hasSheet(ThisWorkbook, CStr(i)) Then
+      ss.Item(i).name = i
+    End If
+  Next
+
+  Set ss = Nothing
+End Sub
+
+
 
 ' ---
 ' Cells
