@@ -244,7 +244,7 @@ End Sub
 
 
 ' Rename worksheets to ordered number.
-Public Sub rmWorksheets()
+Public Sub mvWorksheets()
   Dim num, shtSize As Long
   num = 1
 
