@@ -254,9 +254,8 @@ Public Sub mvWorksheets()
 
   Dim i As Variant
   For i = num To shtSize
-    If Not UtilModule.hasSheet(ThisWorkbook, CStr(i)) Then
-      ss.Item(i).name = i
-    End If
+    ss.Item(i).name = Math.Rnd()
+    ss.Item(i).name = i
   Next
 
   Set ss = Nothing
