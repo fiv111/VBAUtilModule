@@ -254,7 +254,10 @@ Public Sub mvWorksheets()
 
   Dim i As Variant
   For i = num To shtSize
-    ss.Item(i).name = Math.Rnd()
+    ss.Item(i).name = Math.Rnd() * Now
+  Next
+
+  For i = num To shtSize
     ss.Item(i).name = i
   Next
 
