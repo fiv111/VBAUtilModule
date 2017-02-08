@@ -264,6 +264,21 @@ Public Sub mvWorksheets()
   Set ss = Nothing
 End Sub
 
+' show hidden worksheets
+Sub showWorksheets()
+  Dim ws As sheets
+  Set ws = ThisWorkbook.Worksheets
+
+  Dim s As Variant
+  For Each s In ws
+    If Not s.Visible Then
+      s.Visible = True
+    End If
+  Next
+
+  Set ws = Nothing
+End Sub
+
 
 
 ' ---
