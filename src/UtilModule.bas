@@ -339,7 +339,7 @@ Public Sub shapesFreeFloating()
   For Each ws In ThisWorkbook.Worksheets
     If ws.Shapes.Count > 0 Then
       For Each s In ws.Shapes
-        If Not s.AutoShapeType = msoShapeMixed Or Not s.Type = msoShapeMixed Then
+        If Not s.AutoShapeType = msoShapeMixed Then
           s.Placement = xlFreeFloating
         End If
       Next
