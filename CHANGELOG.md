@@ -1,5 +1,8 @@
 # CHANGE LOG
 
+## v1.1.2 (2017.75)
+- bug fixes.
+
 ## v1.1.1 (2016.6.14)
 - remove UtilModuleNoType.bas.
 - tag() add style parameter.
