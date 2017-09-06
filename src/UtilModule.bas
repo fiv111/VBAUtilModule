@@ -187,8 +187,8 @@ Private Sub attachAttributeTable(Optional ByVal ac As Range = Nothing)
   attrHead(1) = "Name"
   attrHead(2) = "Type"
   attrHead(3) = "Description"
-  attrHead(4) = "URL"
-  attrHead(5) = "RedirectURL"
+  attrHead(4) = "Action"
+  attrHead(5) = "Destination"
 
   ' color
   Dim docInfoHeadColor, attrHeadColor, colorWhite, colorGrey As Long
