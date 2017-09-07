@@ -23,13 +23,13 @@ Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
 End Sub
 
 
-Private Sub Workbook_Open()
-  Call UtilModule.shapesFreeFloating
-End Sub
+' Private Sub Workbook_Open()
+'   Call UtilModule.shapesFreeFloating
+' End Sub
 
 
-Private Sub Workbook_SheetActivate(ByVal Sh As Object)
-  Call UtilModule.stopCalculate
-  ThisWorkbook.ActiveSheet.Calculate
-  Call UtilModule.startCalculate
-End Sub
+' Private Sub Workbook_SheetActivate(ByVal Sh As Object)
+'   Call UtilModule.stopCalculate
+'   ThisWorkbook.ActiveSheet.Calculate
+'   Call UtilModule.startCalculate
+' End Sub
