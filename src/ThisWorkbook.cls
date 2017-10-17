@@ -12,15 +12,23 @@ Option Explicit
 
 Private Sub Workbook_BeforeSave(ByVal SaveAsUI As Boolean, Cancel As Boolean)
   Call UtilModule.shapesFreeFloating
-  Call UtilModule.stopCalculate
-  ThisWorkbook.ActiveSheet.Calculate
+  
+  Dim s As Variant
+  Dim sh As Worksheet
+  Set sh = ThisWorkbook.ActiveSheet
+  
+  For Each s In ThisWorkbook.Worksheets
+    Call UtilModule.stopCalculate
+    s.Activate
+    s.Calculate
+  Next
+  
+  sh.Activate
   Call UtilModule.startCalculate
+  Set sh = Nothing
 End Sub
 
 
-Private Sub Workbook_SheetDeactivate(ByVal Sh As Object)
+Private Sub Workbook_SheetDeactivate(ByVal sh As Object)
   Call UtilModule.shapesFreeFloating
-  Call UtilModule.stopCalculate
-  Sh.Calculate
-  Call UtilModule.startCalculate
 End Sub
