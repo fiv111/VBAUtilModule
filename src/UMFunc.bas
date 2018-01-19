@@ -41,3 +41,17 @@ Public Sub echo(ByVal msg As String, Optional ByVal sec As Integer = 1)
   o.Popup msg, sec, "Auto Display", vbInformation
   Set o = Nothing
 End Sub
+
+    
+
+' ---
+' remove names
+' ---
+Sub rmNames()
+  Dim n As Variant
+  MsgBox Names.Count
+  For Each n In Names
+    n.Delete
+  Next
+  MsgBox Names.Count
+End Sub
