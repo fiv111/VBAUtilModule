@@ -60,6 +60,7 @@ Public Sub attachNumberingLabel()
         .TextFrame.Characters.Font.size = UMFunc.kFontSize
         .TextFrame.HorizontalAlignment = xlHAlignCenter
         .TextFrame.VerticalAlignment = xlVAlignCenter
+        .TextFrame.AutoSize = True
       End With
 
       Set s = Nothing
