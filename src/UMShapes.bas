@@ -60,6 +60,11 @@ Public Sub attachNumberingLabel()
         .TextFrame.Characters.Font.size = UMFunc.kFontSize
         .TextFrame.HorizontalAlignment = xlHAlignCenter
         .TextFrame.VerticalAlignment = xlVAlignCenter
+        
+        .TextFrame.MarginLeft = UMFunc.kWidth1cm * 0.1
+        .TextFrame.MarginRight = UMFunc.kWidth1cm * 0.1
+        .TextFrame.MarginTop = UMFunc.kHeight1cm * 0.1
+        .TextFrame.MarginBottom = UMFunc.kHeight1cm * 0.1
         .TextFrame.AutoSize = True
       End With
 
